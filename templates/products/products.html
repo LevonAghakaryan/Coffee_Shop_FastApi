@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Մեր մենյուն</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Մեր կողմից ստեղծված CSS ֆայլի կապակցում -->
+    <link rel="stylesheet" href="/static/css/products.css">
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+    <!-- Header -->
+    <header class="w-full max-w-4xl text-center mb-10">
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-2">Բարի գալուստ մեր սրճարան ☕</h1>
+        <p class="text-xl text-gray-600">Մեր հավելվածի միջոցով դուք կարող եք ուսումնասիրել մեր մենյուն և պատվերներ կատարել։</p>
+    </header>
+
+    <!-- Navigation Button to Add New Product -->
+    <div class="w-full max-w-4xl mb-6 flex justify-end">
+        <a href="/products/create_product"
+            class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-300 transform hover:scale-105">
+            Ավելացնել նոր ապրանք
+        </a>
+    </div>
+
+    <div class="w-full max-w-4xl mb-6 flex justify-end">
+        <a href="/"
+            class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors duration-300 transform hover:scale-105">
+            home
+        </a>
+    </div>
+    <!-- Products Container -->
+    <main class="w-full max-w-4xl">
+        <h2 class="text-3xl font-bold text-gray-700 mb-6">Մեր տեսականին</h2>
+        <div id="products-list"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-down">
+            <!-- Products will be injected here by JavaScript -->
+        </div>
+        <p id="loading-message" class="text-center text-gray-500 mt-10">Բեռնվում է...</p>
+        <p id="error-message" class="text-center text-red-500 mt-10 hidden">Տվյալները բեռնելիս սխալ է առաջացել։</p>
+    </main>
+
+    <!-- JavaScript to Fetch and Render Products -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const productsList = document.getElementById('products-list');
+            const loadingMessage = document.getElementById('loading-message');
+            const errorMessage = document.getElementById('error-message');
+
+            // API-ի հասցեն, որտեղից կստանանք ապրանքները
+            const apiEndpoint = '/products/AllProducts';
+
+            // Ֆունկցիա, որը բեռնում է տվյալները API-ից
+            const fetchProducts = async () => {
+                loadingMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                productsList.innerHTML = ''; // Մաքրել նախորդ ցուցակը
+
+                try {
+                    const response = await fetch(apiEndpoint);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const products = await response.json();
+                    if (products.length === 0) {
+                        productsList.innerHTML = '<p class="text-center text-gray-500 col-span-full">Ցուցակը դատարկ է։ Ավելացրեք նոր ապրանք։</p>';
+                    } else {
+                        renderProducts(products);
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    errorMessage.style.display = 'block';
+                } finally {
+                    loadingMessage.style.display = 'none';
+                }
+            };
+
+            // Ֆունկցիա, որը տպում է ապրանքները էջում
+            const renderProducts = (products) => {
+                products.forEach(product => {
+                    const productCard = `
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-lg p-6 flex flex-col justify-between">
+                            <div class="text-center">
+                                <img src="${product.img_url || 'https://placehold.co/400x300/4B5563/FFFFFF?text=Սուրճ'}" alt="${product.name}" class="w-full h-48 object-cover rounded-md mb-4" onerror="this.onerror=null; this.src='https://placehold.co/400x300/4B5563/FFFFFF?text=Սուրճ';" />
+                                <h3 class="text-2xl font-semibold text-gray-900 mb-2">${product.name}</h3>
+                                <p class="text-gray-600 text-sm mb-4">${product.description || 'Նկարագրությունը բացակայում է։'}</p>
+                            </div>
+                            <div class="flex items-center justify-between mt-4">
+                                <span class="text-xl font-bold text-gray-800">${product.price} դրամ</span>
+                                <button class="px-4 py-2 bg-green-500 text-white font-medium rounded-lg shadow-sm hover:bg-green-600 transition-colors duration-300">Ավելացնել զամբյուղ</button>
+                            </div>
+                        </div>
+                    `;
+                    productsList.innerHTML += productCard;
+                });
+            };
+
+            // Էջը բեռնվելիս կանչում ենք ֆունկցիան
+            fetchProducts();
+        });
+    </script>
+</body>
+
+</html>
