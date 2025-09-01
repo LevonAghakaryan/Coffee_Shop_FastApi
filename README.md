@@ -1,3 +1,100 @@
+# English
+
+# Coffee Shop API ☕  
+This is a simple API for a Coffee Shop built with **Python** and **FastAPI**.  
+The project demonstrates a **Modular Monolith** architecture, where each module follows a **Layered / Clean Architecture** approach.  
+
+## Technologies 🛠️  
+* **Backend**: Python 3.11+, FastAPI  
+* **Database**: MySQL  
+* **ORM**: SQLAlchemy 2.0  
+* **Data Validation**: Pydantic V2  
+* **Web Server**: Uvicorn  
+
+## Architecture 🏛️  
+
+The project is built on two main architectural principles that ensure code organization, maintainability, and scalability.  
+
+### 1. High Level — Modular Monolith  
+
+The application is a single deployable unit (monolith), which makes it simple to run and deploy.  
+However, internally it is logically divided into independent **modules** (e.g., `products`, `orders`).  
+Each module is responsible for one specific business domain.  
+
+**Advantages:**  
+* **Organized code:** Easy to locate files related to a specific domain.  
+* **Low coupling:** Modules are as independent from each other as possible.  
+* **Easy scalability:** Adding new functionality simply means creating a new module.  
+
+### 2. Module Level — Layered Architecture  
+
+Each module is divided into 4 main layers, where every layer has its own responsibility:  
+
+```
+┌──────────────────┐      ┌──────────────────┐      ┌────────────────────┐      ┌──────────┐
+│ Presentation     │──────▶│ Application      │──────▶│ Infrastructure     │──────▶│ Database │
+│ (router.py)      │      │ (services.py)    │      │ (repositories.py)  │      │ (MySQL)  │
+└──────────────────┘      └──────────────────┘      └────────────────────┘      └──────────┘
+         ▲                      ▲                             ▲
+         │                      │                             │
+┌──────────────────┐      ┌──────────────────┐      ┌──────────────────┐
+│ Domain (Schemas) │◀─────┤ Domain (Schemas) │      │ Domain (Models)  │
+└──────────────────┘      └──────────────────┘      └──────────────────┘
+```
+
+
+1. **Presentation Layer**  
+   * **File:** `router.py`  
+   * **Role:** Defines API endpoints, handles HTTP requests, and formats responses.  
+     This is the only layer that communicates with the outside world.  
+
+2. **Application Layer**  
+   * **File:** `services.py`  
+   * **Role:** Implements the core business logic of the application.  
+     It coordinates operations by calling repositories.  
+     This is the "brain" of the module.  
+
+3. **Domain Layer**  
+   * **Files:** `models.py`, `schemas.py`  
+   * **Role:** Defines data structures.  
+     * `models.py`: SQLAlchemy models describing database tables.  
+     * `schemas.py`: Pydantic schemas acting as the "data interface" for the API (validation & serialization).  
+
+4. **Infrastructure Layer**  
+   * **File:** `repositories.py`  
+   * **Role:** Handles direct interaction with the database.  
+     This layer isolates all persistence logic from the rest of the application.  
+
+## Project Structure 📂  
+
+```sh
+coffee_shop/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                 # FastAPI application setup
+│   ├── core/
+│   │   ├── database.py         # SQLAlchemy configuration
+│   │   └── ...
+│   └── modules/
+│       ├── products/           # "Products" module
+│       │   ├── presentation/
+│       │   │   └── router.py
+│       │   ├── application/
+│       │   │   └── services.py
+│       │   ├── domain/
+│       │   │   ├── models.py
+│       │   │   └── schemas.py
+│       │   └── infrastructure/
+│       │       └── repositories.py
+│       └── orders/             # "Orders" module (future)
+├── .env.example                # Example .env file
+├── requirements.txt            # Dependencies
+└── ...
+```
+
+- - -
+# Armenian
+
 # Coffee Shop API ☕
 
 Սա Coffee Shop-ի համար նախատեսված պարզ API է՝ կառուցված Python-ի և FastAPI-ի միջոցով։ Նախագիծը ցուցադրում է **Մոդուլային Մոնոլիտ (Modular Monolith)** ճարտարապետություն, որտեղ յուրաքանչյուր մոդուլ իր հերթին հետևում է **Շերտավորված (Layered / Clean Architecture)** մոտեցմանը։
